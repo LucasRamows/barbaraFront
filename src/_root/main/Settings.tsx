@@ -1,24 +1,21 @@
-import React, { useState, useEffect } from "react";
 import {
-  MessageSquare,
   Bell,
-  Smartphone,
-  QrCode,
   CheckCircle2,
   Loader2,
-  X,
-  RefreshCw,
+  MessageSquare,
   Moon,
-  Sun,
+  RefreshCw,
+  Smartphone,
+  Sun
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import apiBack from "../../api/apiBack";
 import { useTheme } from "../../validation/ThemeContext";
 
 const SettingsPage: React.FC = () => {
   const [receiveNotifications, setReceiveNotifications] = useState(true);
   const [themeToggle, setThemeToggle] = useState(true);
-  const { theme, toggleTheme } = useTheme();
-
+  const {toggleTheme } = useTheme();
   const [whatsappStatus, setWhatsappStatus] = useState<
     "disconnected" | "connecting" | "connected"
   >("disconnected");

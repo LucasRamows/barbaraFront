@@ -1,33 +1,33 @@
-import React, { useState, useEffect } from "react";
 import {
-  User,
-  Mail,
-  Lock,
-  Save,
-  Loader2,
-  Key,
   Eye,
   EyeOff,
+  Key,
+  Loader2,
+  Lock,
   LogOut,
+  Mail,
+  Save,
+  User,
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import apiBack from "../../api/apiBack";
 import { useData } from "../../contexts/DataContext";
 
 const ProfilePage: React.FC = () => {
-  const { data, setData } = useData();
+  const { data } = useData();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const token = localStorage.getItem("token");
   
-  const [isSaving, setIsSaving] = useState(false);
+  const [, setIsSaving] = useState(false);
 
   useEffect(()=>{
     setProfile(data);
     setLoading(false)
   })
 
-  const handleUpdate = async (e:any) => {
+  const handleUpdate = async () => {
     const nameInput = document.getElementById(
       "profile-name"
     ) as HTMLInputElement;
@@ -172,8 +172,8 @@ const ProfilePage: React.FC = () => {
 
         {/* Ação Final */}
         <button
-          onClick={(e) => {
-            handleUpdate(e);
+          onClick={() => {
+            handleUpdate();
           }}
           className="w-full bg-primary text-primary-foreground py-5 rounded-[2rem] font-neusharp italic uppercase text-sm shadow-xl shadow-primary/10 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
         >

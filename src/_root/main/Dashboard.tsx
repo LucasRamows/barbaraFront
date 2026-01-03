@@ -13,10 +13,10 @@ import { useEffect, useMemo, useState } from "react";
 import apiBack from "../../api/apiBack";
 
 const App = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState("expense");
+  const [type, setType] = useState<TransactionType>("expense");
   const [category, setCategory] = useState("Moradia");
   const token = localStorage.getItem("token");
   // Estado para o mês selecionado (Data base para o filtro)
@@ -33,6 +33,17 @@ const App = () => {
     "Investimentos",
     "Outros",
   ];
+  type TransactionType = "income" | "expense";
+
+  type Transaction = {
+    id: string;
+    description: string;
+    amount: number;
+    type: TransactionType;
+    category: string;
+    timestamp: string;
+    dateDisplay: string;
+  };
 
   async function loadTransactions() {
     try {
@@ -46,11 +57,11 @@ const App = () => {
         },
       });
 
-      const formatted = response.data.map((t) => ({
-        id: t.id,
+      const formatted: Transaction[] = response.data.map((t: any) => ({
+        id: String(t.id),
         description: t.description,
-        amount: t.amount,
-        type: t.type.toLowerCase(), // INCOME -> income
+        amount: Number(t.amount),
+        type: t.type.toLowerCase() as TransactionType,
         category: t.category,
         timestamp: t.date,
         dateDisplay: new Date(t.date).toLocaleDateString("pt-BR"),
@@ -81,9 +92,7 @@ const App = () => {
     month: "long",
     year: "numeric",
   });
-
-  // Filtrar transações do mês atual
-  const filteredTransactions = useMemo(() => {
+  const filteredTransactions = useMemo<Transaction[]>(() => {
     return transactions.filter((t) => {
       const tDate = new Date(t.timestamp);
       return (
@@ -103,8 +112,8 @@ const App = () => {
       .reduce((acc, t) => acc + t.amount, 0);
     const savingsRate = income > 0 ? ((income - expense) / income) * 100 : 0;
 
-    // Agrupar por categoria para achar o maior gasto
-    const catMap = {};
+    const catMap: Record<string, number> = {};
+
     filteredTransactions
       .filter((t) => t.type === "expense")
       .forEach((t) => {
@@ -123,21 +132,22 @@ const App = () => {
     };
   }, [filteredTransactions]);
 
-  const handleAddTransaction = async (e) => {
+  const handleAddTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!description || !amount) return;
 
-    const newTransaction = {
-      id: Date.now(),
+    const newTransaction: Transaction = {
+      id: String(Date.now()),
       description,
       amount: parseFloat(amount),
       type,
       category,
-      timestamp: currentDate.toISOString(), // Salva no mês que o usuário está visualizando para facilitar o teste
+      timestamp: currentDate.toISOString(),
       dateDisplay: currentDate.toLocaleDateString("pt-BR"),
     };
 
-    setTransactions([newTransaction, ...transactions]);
+    setTransactions((prev) => [newTransaction, ...prev]);
+
     await apiBack.post(
       "/private/transactions",
       {
@@ -148,18 +158,14 @@ const App = () => {
         date: newTransaction.timestamp,
       },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 
-    console.log(newTransaction);
     setDescription("");
     setAmount("");
   };
-
-  const formatCurrency = (val) =>
+  const formatCurrency = (val: number): string =>
     new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",

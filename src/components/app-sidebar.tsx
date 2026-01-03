@@ -22,7 +22,7 @@ import {
 import { useData } from "../contexts/DataContext";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data, setData } = useData();
+  const { data } = useData();
 
   const block = {
     user: {

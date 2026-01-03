@@ -1,5 +1,6 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import type { AxiosResponse } from "axios";
 import {
   Bold,
   ChevronLeft,
@@ -166,7 +167,7 @@ const NoteEditor: React.FC = () => {
     };
 
     try {
-      let response;
+      let response: AxiosResponse<Note>;;
 
       const isNewNote = currentNote.id.toString().startsWith("temp-");
 

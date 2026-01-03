@@ -1,4 +1,4 @@
-import { Clock, Dumbbell, GripVertical, Pencil, Plus, Save, Trash2, X } from "lucide-react";
+import { Clock, Dumbbell, GripVertical, Pencil, Plus, Trash2, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import apiBack from "../../api/apiBack";
 
@@ -77,7 +77,6 @@ const WorkoutManager: React.FC = () => {
           },
         })),
       }));
-      const planId = data.id;
       setWorkoutDays(days);
       console.log(days);
     };

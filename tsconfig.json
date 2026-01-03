@@ -1,6 +1,11 @@
 {
   "files": [],
    "compilerOptions": {
+     "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "strict": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

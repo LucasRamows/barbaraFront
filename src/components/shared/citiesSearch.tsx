@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import apiGoverment from "../../api/apiGoverment";
 import {
   Command,
   CommandEmpty,
@@ -9,7 +10,6 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
-import apiGoverment from "../../api/apiGoverment";
 
 interface City {
   id: number;
@@ -17,7 +17,7 @@ interface City {
   state: string;
 }
 
-const CitySearch = (getCity: any) => {
+const CitySearch = () => {
   const [query, setQuery] = useState("");
   const [isSelected, setIsSelected] = useState(false);
   const [cities, setCities] = useState<City[]>([]);

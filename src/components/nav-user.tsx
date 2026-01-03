@@ -1,15 +1,12 @@
 "use client";
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
-  User,
+  User
 } from "lucide-react";
 
+import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import {
   DropdownMenu,
@@ -26,7 +23,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "../components/ui/sidebar";
-import { Link } from "react-router-dom";
 
 export function NavUser({
   user,
@@ -87,7 +83,7 @@ export function NavUser({
               </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild variant="destructive">
+            <DropdownMenuItem asChild>
               <button
                 onClick={() => {
                   localStorage.clear();
