@@ -1,5 +1,4 @@
 import { Navigate, Outlet } from "react-router-dom";
-import logo from './assets/background.jpg';
 const AuthLayout = () => {
   const token = localStorage.getItem("token");
   return (
@@ -13,7 +12,7 @@ const AuthLayout = () => {
           </div>
           <img
             className="hidden md:block h-screen w-1/2 object-cover bg-no-repeat"
-            src = {logo}
+            src = "/assets/background.jpg"
             alt="img"
           />
         </div>
