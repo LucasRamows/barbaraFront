@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import logo from './public/assets/background.jpg';
+import logo from './assets/background.jpg';
 const AuthLayout = () => {
   const token = localStorage.getItem("token");
   return (
