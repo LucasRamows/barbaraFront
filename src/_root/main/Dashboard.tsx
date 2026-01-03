@@ -183,7 +183,7 @@ const App = () => {
             <p className="text-sm italic">Análise de dados financeiros</p>
           </div>
 
-          <div className="flex items-center bg-card shadow-sm border border-card rounded-xl p-1">
+          <div className="flex justify-between items-center  bg-card shadow-sm border border-card rounded-xl p-1">
             <button
               onClick={prevMonth}
               className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
@@ -373,7 +373,7 @@ const App = () => {
             <div className="bg-card rounded-3xl border shadow-sm overflow-hidden">
               <div className="p-6 border-b border-muted flex items-center justify-between">
                 <h2 className="font-bold text-lg">
-                  Transações de {monthLabel}
+                  De {monthLabel}
                 </h2>
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -382,7 +382,7 @@ const App = () => {
                       : "bg-rose-50 text-rose-600"
                   }`}
                 >
-                  Resultado: {formatCurrency(stats.balance)}
+                  {formatCurrency(stats.balance)}
                 </div>
               </div>
               <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">

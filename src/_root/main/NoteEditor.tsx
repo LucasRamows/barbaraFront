@@ -257,7 +257,7 @@ const NoteEditor: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-6">
                     <span className="text-[10px] font-bold text-muted-foreground italic">
-                      {new Date(note.createdAt).toLocaleDateString()}
+                      {new Date(note.createdAt).toLocaleDateString('pt-BR'  )}
                     </span>
                   </div>
                   <h3 className="text-xl font-neusharp italic uppercase leading-none mb-4 group-hover:text-primary transition-colors">
