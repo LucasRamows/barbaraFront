@@ -3,11 +3,11 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
+  CreditCard,
   Plus,
-  Target,
   Trash2,
   TrendingDown,
-  TrendingUp,
+  TrendingUp
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import apiBack from "../../api/apiBack";
@@ -17,23 +17,31 @@ const App = () => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<TransactionType>("expense");
+  const [installment, setinstallment] = useState("1x");
   const [category, setCategory] = useState("Moradia");
   const token = localStorage.getItem("token");
-  // Estado para o mês selecionado (Data base para o filtro)
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const categories = [
     "Moradia",
     "Alimentação",
+    "Lanches/IFD",
+    "Autocuidado",
     "Transporte",
+    "Moto",
     "Lazer",
     "Saúde",
     "Educação",
+    "Infra/Tec",
     "Salário",
     "Investimentos",
+    "Familia",
     "Outros",
   ];
-  type TransactionType = "income" | "expense";
+
+  const installments = ["1x", "2x", "3x", "4x", "5x"];
+
+  type TransactionType = "income" | "expense" | "credit";
 
   type Transaction = {
     id: string;
@@ -47,7 +55,7 @@ const App = () => {
 
   async function loadTransactions() {
     try {
-      const month = currentDate.getMonth() + 1; // 1–12
+      const month = currentDate.getMonth() + 1;
       const year = currentDate.getFullYear();
 
       const response = await apiBack.get("/private/transactions", {
@@ -102,17 +110,20 @@ const App = () => {
     });
   }, [transactions, currentDate]);
 
-  // Cálculos de Insights
   const stats = useMemo(() => {
     const income = filteredTransactions
       .filter((t) => t.type === "income")
       .reduce((acc, t) => acc + t.amount, 0);
     const expense = filteredTransactions
-      .filter((t) => t.type === "expense")
+      .filter((t) => t.type === "expense" && "credit")
+      .reduce((acc, t) => acc + t.amount, 0);
+    const creditTotal = filteredTransactions
+      .filter((t) => t.type === "credit")
       .reduce((acc, t) => acc + t.amount, 0);
     const savingsRate = income > 0 ? ((income - expense) / income) * 100 : 0;
 
     const catMap: Record<string, number> = {};
+    const catInc: Record<string, number> = {};
 
     filteredTransactions
       .filter((t) => t.type === "expense")
@@ -120,15 +131,29 @@ const App = () => {
         catMap[t.category] = (catMap[t.category] || 0) + t.amount;
       });
 
+    filteredTransactions
+      .filter((t) => t.type === "credit")
+      .forEach((t) => {
+        catMap[t.category] = (catMap[t.category] || 0) + t.amount;
+      });
+
+    filteredTransactions
+      .filter((t) => t.type === "income")
+      .forEach((t) => {
+        catInc[t.category] = (catInc[t.category] || 0) + t.amount;
+      });
+
     const topCategory = Object.entries(catMap).sort((a, b) => b[1] - a[1])[0];
 
     return {
       income,
       expense,
-      balance: income - expense,
+      creditTotal,
+      balance: income - expense - creditTotal,
       savingsRate,
       topCategory,
       catMap,
+      catInc,
     };
   }, [filteredTransactions]);
 
@@ -136,34 +161,50 @@ const App = () => {
     e.preventDefault();
     if (!description || !amount) return;
 
-    const newTransaction: Transaction = {
-      id: String(Date.now()),
-      description,
-      amount: parseFloat(amount),
-      type,
-      category,
-      timestamp: currentDate.toISOString(),
-      dateDisplay: currentDate.toLocaleDateString("pt-BR"),
-    };
+    const baseAmount = parseFloat(amount);
+    const numInstallments = parseInt(installment.replace("x", "")) || 1;
+    const valuePerInstallment = baseAmount / numInstallments;
 
-    setTransactions((prev) => [newTransaction, ...prev]);
+    const iterations = type === "credit" ? numInstallments : 1;
 
-    await apiBack.post(
-      "/private/transactions",
-      {
-        description: newTransaction.description,
-        amount: newTransaction.amount,
-        type: newTransaction.type.toUpperCase(),
-        category: newTransaction.category,
-        date: newTransaction.timestamp,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    for (let i = 0; i < iterations; i++) {
+      const transactionDate = new Date(currentDate);
+      transactionDate.setMonth(currentDate.getMonth() + i);
+
+      const payload = {
+        description:
+          iterations > 1
+            ? `${description} (${i + 1}/${numInstallments})`
+            : description,
+        amount: type === "credit" ? valuePerInstallment : baseAmount,
+        type: type.toUpperCase(),
+        category: category,
+        date: transactionDate.toISOString(),
+      };
+
+      try {
+        await apiBack.post("/private/transactions", payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (err) {
+        console.error("Erro ao salvar parcela", i, err);
       }
-    );
+    }
 
     setDescription("");
     setAmount("");
+    setinstallment("1x");
+    loadTransactions();
+  };
+  const handleDeleteTransaction = async (id: string) => {
+    try {
+      await apiBack.delete(`/private/transactions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (err) {
+      console.error("Erro ao deletar parcela", err);
+    }
+    setTransactions(transactions.filter((x) => x.id !== id));
   };
   const formatCurrency = (val: number): string =>
     new Intl.NumberFormat("pt-BR", {
@@ -177,10 +218,9 @@ const App = () => {
         {/* Header & Mês */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-2xl font-black uppercase tracking-tight">
+            <h1 className="font-neusharp text-2xl text-primary tracking-tighter italic">
               Dashboard Financeiro
             </h1>
-            <p className="text-sm italic">Análise de dados financeiros</p>
           </div>
 
           <div className="flex justify-between items-center  bg-card shadow-sm border border-card rounded-xl p-1">
@@ -235,21 +275,15 @@ const App = () => {
           <div className="bg-card p-5 rounded-2xl border shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                <Target size={18} />
+                <CreditCard size={18} />
               </div>
               <span className="text-sm font-medium text-slate-500">
-                Taxa de Poupança
+                Cartão de Crédito
               </span>
             </div>
             <p className="text-xl font-bold text-indigo-600">
-              {stats.savingsRate.toFixed(1)}%
+              {formatCurrency(stats.creditTotal)}
             </p>
-            <div className="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div
-                className="bg-indigo-500 h-full transition-all duration-500"
-                style={{ width: `${Math.min(stats.savingsRate, 100)}%` }}
-              ></div>
-            </div>
           </div>
 
           <div className="bg-card p-5 rounded-2xl border shadow-sm">
@@ -304,7 +338,7 @@ const App = () => {
                         : "bg-white border-slate-100 text-slate-400"
                     }`}
                   >
-                    Despesa
+                    Débito
                   </button>
                   <button
                     type="button"
@@ -317,7 +351,31 @@ const App = () => {
                   >
                     Receita
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setType("credit")}
+                    className={`flex-1 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
+                      type === "credit"
+                        ? "bg-blue-50 border-blue-200 text-blue-600"
+                        : "bg-white border-slate-100 text-slate-400"
+                    }`}
+                  >
+                    Crédito
+                  </button>
                 </div>
+                {type === "credit" ? (
+                  <select
+                    value={installment}
+                    onChange={(e) => setinstallment(e.target.value)}
+                    className="w-full px-4 py-2 bg-muted border-none rounded-xl"
+                  >
+                    {installments.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -366,15 +424,41 @@ const App = () => {
                 )}
               </div>
             </div>
+            <div className="bg-card p-6 rounded-3xl border shadow-sm">
+              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <BarChart3 size={20} className="text-indigo-500" /> Receita por
+                Categoria
+              </h2>
+              <div className="space-y-3">
+                {Object.entries(stats.catInc).length > 0 ? (
+                  Object.entries(stats.catInc).map(([cat, val]) => (
+                    <div key={cat}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-slate-500">{cat}</span>
+                        <span className="font-bold">{formatCurrency(val)}</span>
+                      </div>
+                      <div className="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
+                        <div
+                          className="bg-green-500 h-full"
+                          style={{ width: `${(val / stats.income) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-slate-400 text-sm py-4">
+                    Sem receita
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Histórico do Mês */}
           <div className="lg:col-span-2">
             <div className="bg-card rounded-3xl border shadow-sm overflow-hidden">
               <div className="p-6 border-b border-muted flex items-center justify-between">
-                <h2 className="font-bold text-lg">
-                  De {monthLabel}
-                </h2>
+                <h2 className="font-bold text-lg">De {monthLabel}</h2>
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-bold ${
                     stats.balance >= 0
@@ -431,10 +515,10 @@ const App = () => {
                           {formatCurrency(t.amount)}
                         </span>
                         <button
-                          onClick={() =>
-                            setTransactions(
-                              transactions.filter((x) => x.id !== t.id)
-                            )
+                          onClick={
+                            () =>
+                              handleDeleteTransaction(t.id)
+                            //votar
                           }
                           className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-rose-500 transition-all"
                         >

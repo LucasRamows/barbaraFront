@@ -1,25 +1,23 @@
+import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { AppSidebar } from "../components/app-sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList
+} from "../components/ui/breadcrumb";
+import { Separator } from "../components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "../components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "../components/ui/breadcrumb";
-import { Separator } from "../components/ui/separator";
-import { useEffect, useState } from "react";
 
 const RootLayout = () => {
-  const location = useLocation(); 
-  const [actualPage, setActualPage] = useState("Dashboard");
+  const location = useLocation();
+  const [, setActualPage] = useState("Dashboard");
 
   useEffect(() => {
-    // toda vez que a rota mudar, atualiza a string
     switch (location.pathname) {
       case "/profile":
         setActualPage("Perfil");
@@ -31,7 +29,10 @@ const RootLayout = () => {
         setActualPage("Treino");
         break;
       case "/tasks":
-        setActualPage("Tarefas");
+        setActualPage("Ideias");
+        break;
+      case "/health":
+        setActualPage("Saúde");
         break;
       default:
         setActualPage("Dashboard");
@@ -53,8 +54,7 @@ const RootLayout = () => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbPage>{actualPage}</BreadcrumbPage>
-                </BreadcrumbItem>
+                  </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>

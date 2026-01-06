@@ -289,7 +289,7 @@ const deleteExercise = async (id: string) => {
   return (
     <div className="min-h-screen bg-background text-foreground font-poppins pb-32">
       {/* Header */}
-      <header className="px-4 flex justify-between items-center">
+      <header className="flex justify-between items-center">
         <div>
           <h1 className="font-neusharp text-2xl text-primary tracking-tighter italic">
             Treino
@@ -312,7 +312,7 @@ const deleteExercise = async (id: string) => {
       </header>
 
       {workoutDays.length > 0 && (
-        <main className="p-4 max-w-4xl mx-auto">
+        <main className="max-w-4xl mx-auto">
           {/* Seletor de Dias */}
           <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
             {workoutDays.map((day) => (

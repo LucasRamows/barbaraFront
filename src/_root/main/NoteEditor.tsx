@@ -218,16 +218,13 @@ const NoteEditor: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-poppins selection:bg-primary/30">
       {!isEditing ? (
-        <main className="max-w-6xl mx-auto p-6 md:p-12">
+        <main className="max-w-6xl mx-auto">
           {/* Header Minimalista */}
           <div className="flex justify-between items-end mb-16 border-b border-border pb-8">
             <div>
               <h1 className="font-neusharp text-2xl text-primary tracking-tighter italic">
-                Ideias
+                Projetos
               </h1>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] mt-2 ml-1">
-                Archive & Storage
-              </p>
             </div>
             <button
               onClick={createNewNote}
@@ -278,7 +275,7 @@ const NoteEditor: React.FC = () => {
       ) : (
         /* --- EDITOR FOCO TOTAL --- */
         <div className="animate-in fade-in duration-500 bg-background min-h-screen flex flex-col">
-          <header className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-background/80 backdrop-blur-xl z-30">
+          <header className="py-6 border-b border-border flex justify-between items-center sticky top-0 bg-background/80 backdrop-blur-xl z-30">
             <button
               onClick={saveCurrentNote}
               className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground"

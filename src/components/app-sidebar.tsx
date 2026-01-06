@@ -2,10 +2,11 @@
 
 import {
   Dumbbell,
-  GalleryVerticalEnd,
+  NotebookPen,
   PieChartIcon,
   Settings,
-  Wallet
+  Wallet,
+  HeartPulse
 } from "lucide-react";
 import * as React from "react";
 
@@ -32,23 +33,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     business: {
       name: "A Bárbara",
-      logo: GalleryVerticalEnd,
+      logo: NotebookPen,
     },
     projects: [
       {
-        name: "Dashboard Financeiro",
+        name: "Financeiro",
         url: "/dashboard",
         icon: Wallet,
       },
       {
-        name: "Tarefas",
-        url: "/tasks",
+        name: "Projetos",
+        url: "/projects",
         icon: PieChartIcon,
       },
       {
-        name: "Dashboard Treino",
+        name: "Treino",
         url: "/workout",
         icon: Dumbbell,
+      },
+      {
+        name: "Saúde",
+        url: "/health",
+        icon: HeartPulse,
       },
       {
         name: "Configurações",
