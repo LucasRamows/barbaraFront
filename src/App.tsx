@@ -12,6 +12,7 @@ import { AlertProvider } from "./components/shared/AlertProvider";
 import { ThemeProvider } from "./validation/ThemeContext";
 import DataProvider from "./contexts/DataContext";
 import HealthModule from "./_root/main/HealthModule";
+import Security from "./_root/main/Security";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/health" element={<HealthModule />} />
               <Route path="/projects" element={<NoteEditor />} />
+              <Route path="/security" element={<Security />} />
             </Route>
           </Routes>
         </DataProvider>

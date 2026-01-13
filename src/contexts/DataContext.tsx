@@ -16,19 +16,19 @@ const DataProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    try {
-      const res = await apiBack.get("/private/me", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+    // try {
+    //   const res = await apiBack.get("/private/me", {
+    //     headers: {
+    //       Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //     },
+    //   });
 
-      setData(res.data);
-    } catch (err) {
-      console.error("Erro ao buscar dados do usuário:", err);
-      localStorage.removeItem("token");
-      navigate("/sign-in");
-    }
+    //   setData(res.data);
+    // } catch (err) {
+    //   console.error("Erro ao buscar dados do usuário:", err);
+    //   localStorage.removeItem("token");
+    //   navigate("/sign-in");
+    // }
   };
 
   useEffect(() => {
