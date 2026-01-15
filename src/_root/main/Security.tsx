@@ -10,7 +10,7 @@ import {
   ShoppingBag,
   Trash2,
   Unlock,
-  Upload
+  Upload,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import apiBack from "../../api/apiBack";
@@ -22,7 +22,6 @@ interface VaultItem {
   login: string;
   password: string;
 }
-
 
 interface Status {
   totalCredentials: number;
@@ -127,7 +126,7 @@ export default function Security() {
       const response = await apiBack.put(
         "/private/publickey",
         {
-          key: pubPem, 
+          key: pubPem,
         },
         {
           headers: {
@@ -169,7 +168,13 @@ export default function Security() {
 
     const text = await file.text();
     try {
-      const binaryDerString = atob(text.trim());
+      const clean = text
+        .replace(/-----BEGIN [\w\s]+-----/g, "")
+        .replace(/-----END [\w\s]+-----/g, "")
+        .replace(/\s+/g, "");
+
+      const binaryDerString = atob(clean);
+
       const binaryDer = new Uint8Array(binaryDerString.length);
       for (let i = 0; i < binaryDerString.length; i++) {
         binaryDer[i] = binaryDerString.charCodeAt(i);
@@ -301,11 +306,11 @@ export default function Security() {
     return <Globe size={20} />;
   };
 
-  return (
-    <div className="min-h-screen bg-[#0a0a0a] text-neutral-200 font-sans selection:bg-blue-500/30">
+return (
+    <div className="min-h-screen bg-background text-neutral-200 font-sans selection:bg-blue-500/30">
       <div className="w-full mx-auto py-1">
         {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16 border-b border-white/5 pb-10">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16 border-b border-white/5 pb-10 mt-8">
           <div className="flex items-center">
             <div>
               <h1 className="font-neusharp text-2xl text-primary tracking-tighter italic">
@@ -317,16 +322,14 @@ export default function Security() {
           <div className="flex flex-wrap gap-3">
             {!isUnlocked ? (
               <>
-                {!status || false? (
+                {!status ? (
                   <button
                     onClick={generateKeys}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-2xl font-bold transition-all active:scale-95"
                   >
                     <Key size={18} /> CRIAR NOVA CHAVE
                   </button>
-                ) : (
-                  <></>
-                )}
+                ) : null}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="flex items-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-white px-5 py-2.5 rounded-2xl font-bold border border-white/10 transition-all active:scale-95"
