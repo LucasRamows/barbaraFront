@@ -1,12 +1,12 @@
 "use client";
-
 import {
   Dumbbell,
   NotebookPen,
   PieChartIcon,
   Settings,
   Wallet,
-  HeartPulse
+  HeartPulse,
+  Lock,
 } from "lucide-react";
 import * as React from "react";
 
@@ -47,6 +47,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: PieChartIcon,
       },
       {
+        name: "Cofre",
+        url: "/bank",
+        icon: Lock,
+      },
+      {
         name: "Treino",
         url: "/workout",
         icon: Dumbbell,
@@ -61,7 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "/settings",
         icon: Settings,
       },
-    ]
+    ],
   };
   return (
     <Sidebar collapsible="icon" {...props}>

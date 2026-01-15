@@ -26,12 +26,13 @@ const App = () => {
 
             <Route element={<RootLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
               <Route path="/workout" element={<WorkoutManager />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/health" element={<HealthModule />} />
               <Route path="/projects" element={<NoteEditor />} />
-              <Route path="/security" element={<Security />} />
+              <Route path="/bank" element={<Security />} />
             </Route>
           </Routes>
         </DataProvider>

@@ -38,7 +38,7 @@ const RootLayout = () => {
         setActualPage("Dashboard");
         break;
     }
-  }, [location.pathname]); // ✅ dependência da rota
+  }, [location.pathname]);
 
   return (
     <SidebarProvider>
