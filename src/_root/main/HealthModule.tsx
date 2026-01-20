@@ -23,6 +23,7 @@ interface HealthExam {
 interface Tasks {
   id: string;
   name: string;
+  type: string;
   description: string;
   date: Date;
   isPriority: string;
@@ -62,9 +63,11 @@ const HealthModule: React.FC = () => {
         const { data } = await apiBack.get<Tasks[]>(`/private/tasks`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        setTask(data);
-        console.log("Notas carregadas:", data);
+        const onlyHealthTasks = Array.isArray(data)
+          ? data.filter((task: Tasks) => task.type === "HEALTH")
+          : [];
+        setTask(onlyHealthTasks);
+        console.log("Notas carregadas:", onlyHealthTasks);
       } catch (error) {
         console.error("Erro ao buscar notas:", error);
       }
@@ -127,7 +130,7 @@ const HealthModule: React.FC = () => {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
     } catch (error) {
       console.error("Erro ao processar criação:", error);

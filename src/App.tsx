@@ -13,6 +13,7 @@ import { ThemeProvider } from "./validation/ThemeContext";
 import DataProvider from "./contexts/DataContext";
 import HealthModule from "./_root/main/HealthModule";
 import Security from "./_root/main/Security";
+import TaskManager from "./_root/main/Tasks";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/" element={<Dashboard />} />
               <Route path="/workout" element={<WorkoutManager />} />
+              <Route path="/tasks" element={<TaskManager />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/health" element={<HealthModule />} />

@@ -7,6 +7,7 @@ import {
   Wallet,
   HeartPulse,
   Lock,
+  AlarmClockCheck,
 } from "lucide-react";
 import * as React from "react";
 
@@ -45,6 +46,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         name: "Projetos",
         url: "/projects",
         icon: PieChartIcon,
+      },
+      {
+        name: "Tarefas",
+        url: "/tasks",
+        icon: AlarmClockCheck,
       },
       {
         name: "Cofre",
