@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./_auth/AuthLayout";
 import SigninForm from "./_auth/forms/SigninForm";
 import RootLayout from "./_root/RootLayout";
-import { default as Dashboard, default as Financial } from "./_root/main/Financial";
+import { default as Financial } from "./_root/main/Financial";
 import HealthModule from "./_root/main/HealthModule";
 import NoteEditor from "./_root/main/NoteEditor";
 import Profile from "./_root/main/Profile";
