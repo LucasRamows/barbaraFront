@@ -12,7 +12,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import apiBack from "../../api/apiBack";
 
-const App = () => {
+const Financial = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -25,6 +25,7 @@ const App = () => {
   const categories = [
     "Moradia",
     "Alimentação",
+    "Dizimo",
     "Lanches/IFD",
     "Autocuidado",
     "Transporte",
@@ -295,7 +296,7 @@ const App = () => {
                 Maior Gasto
               </span>
             </div>
-            <p className="text-lg font-bold text-slate-800 truncate">
+            <p className="text-lg font-bold text-primary truncate">
               {stats.topCategory ? stats.topCategory[0] : "Nenhum"}
             </p>
             <p className="text-xs text-slate-400 mt-1">
@@ -495,7 +496,7 @@ const App = () => {
                           )}
                         </div>
                         <div>
-                          <h4 className="font-bold text-slate-800 text-sm">
+                          <h4 className="font-bold text-primary text-sm">
                             {t.description}
                           </h4>
                           <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
@@ -537,4 +538,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Financial;

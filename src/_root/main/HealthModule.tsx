@@ -203,7 +203,8 @@ const HealthModule: React.FC = () => {
                       </h3>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Calendar size={14} />
-                        {new Date(exam.date).toLocaleDateString("pt-PT")}
+                        {exam.date.substring(8, 10)}/{exam.date.substring(5, 7)}
+                        /{exam.date.substring(0, 4)}
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-2">

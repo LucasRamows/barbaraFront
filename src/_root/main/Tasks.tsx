@@ -80,9 +80,9 @@ const TaskManager = () => {
     const reminderTime = calculateReminderTime(dueDate, reminderType);
     const newTask = {
       name: title,
-      type: "HEALTH" as TaskType,
+      type: "WORK" as TaskType,
       description: description || undefined,
-      date: dueDate ? new Date(dueDate).toISOString() : undefined,
+      date: dueDate ? new Date(`${dueDate}T00:00:00`) : undefined,
       isPriority: false,
       reminderTime,
     };
