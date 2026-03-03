@@ -40,6 +40,7 @@
     "cmdk": "^1.1.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.34.5",
     "lucide-react": "^0.540.0",
     "react": "^19.1.1",
     "react-day-picker": "^9.9.0",

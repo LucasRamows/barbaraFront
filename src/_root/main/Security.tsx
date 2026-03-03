@@ -19,7 +19,8 @@ import apiBack from "../../api/apiBack";
 interface VaultItem {
   id: string;
   site: string;
-  login: string;
+  login?: string;
+  email?: string;
   password: string;
 }
 
@@ -34,6 +35,7 @@ export default function Security() {
   const [items, setItems] = useState<VaultItem[]>([]);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [status, setStatus] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [pubRaw, setPubRaw] = useState("");
   const [privateKey, setPrivateKey] = useState<CryptoKey | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -61,6 +63,8 @@ export default function Security() {
       }
     } catch (err) {
       console.error("Erro ao carregar credenciais:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,10 +83,13 @@ export default function Security() {
   };
 
   useEffect(() => {
+    fetchStatus();
+  }, []);
+
+  useEffect(() => {
     if (isUnlocked) {
       fetchCredentials();
     }
-    fetchStatus();
   }, [isUnlocked]);
 
   // --- Initial Load ---
@@ -224,6 +231,7 @@ export default function Security() {
       id: Date.now().toString(),
       site,
       login,
+      email: login,
       password: encrypted,
     };
 
@@ -299,26 +307,34 @@ export default function Security() {
     return <Globe size={20} />;
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background text-primary font-sans selection:bg-blue-500/30">
-      <div className="w-full mx-auto py-1">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
+      <div className="w-full mx-auto py-1 px-4 md:px-8">
         {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16 border-b border-white/5 pb-10">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 md:mb-16 border-b border-border pb-8 md:pb-10">
           <div className="flex items-center">
             <div>
-              <h1 className="font-neusharp text-2xl text-primary tracking-tighter italic">
+              <h1 className="font-neusharp text-2xl text-foreground tracking-tighter italic">
                 CRYPTO VAULT
               </h1>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto">
             {!isUnlocked ? (
               <>
                 {!status || false ? (
                   <button
                     onClick={generateKeys}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-2xl font-bold transition-all active:scale-95"
+                    className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-3 sm:py-2.5 rounded-2xl font-bold transition-all active:scale-95 text-sm md:text-base"
                   >
                     <Key size={18} /> CRIAR NOVA CHAVE
                   </button>
@@ -327,7 +343,7 @@ export default function Security() {
                 )}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-white px-5 py-2.5 rounded-2xl font-bold border border-white/10 transition-all active:scale-95"
+                  className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground px-5 py-3 sm:py-2.5 rounded-2xl font-bold border border-border transition-all active:scale-95 text-sm md:text-base"
                 >
                   <Upload size={18} /> SUBIR KEY.PEM
                 </button>
@@ -335,7 +351,7 @@ export default function Security() {
             ) : (
               <button
                 onClick={() => window.location.reload()}
-                className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 px-5 py-2.5 rounded-2xl font-bold border border-red-500/20 transition-all"
+                className="w-full sm:w-auto flex justify-center items-center gap-2 bg-destructive/10 hover:bg-destructive/20 text-destructive px-5 py-3 sm:py-2.5 rounded-2xl font-bold border border-destructive/20 transition-all text-sm md:text-base"
               >
                 <LogOut size={18} /> FECHAR COFRE
               </button>
@@ -354,29 +370,29 @@ export default function Security() {
 
         {/* Content */}
         {!isUnlocked ? (
-          <div className="flex flex-col items-center justify-center py-24 bg-white/5 rounded-[3rem] border border-white/5 backdrop-blur-sm">
-            <div className="bg-neutral-900 p-8 rounded-full mb-8 text-neutral-600 shadow-inner">
+          <div className="flex flex-col items-center justify-center py-24 bg-card rounded-[3rem] border border-border backdrop-blur-sm">
+            <div className="bg-secondary p-8 rounded-full mb-8 text-secondary-foreground shadow-inner">
               <Lock size={64} />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">
+            <h2 className="text-2xl font-bold text-foreground mb-3">
               Cofre Protegido
             </h2>
-            <p className="text-neutral-500 text-center max-w-sm mb-10 leading-relaxed">
+            <p className="text-muted-foreground text-center max-w-sm mb-10 leading-relaxed">
               Os seus dados estão criptografados. Carregue o ficheiro{" "}
-              <code className="text-blue-400 font-mono">key.pem</code> para
+              <code className="text-primary font-mono">key.pem</code> para
               desbloquear.
             </p>
           </div>
         ) : (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white flex items-center gap-3">
-                <Unlock className="text-blue-500" size={24} />
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 px-1 sm:px-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="text-xl font-bold text-foreground flex items-center justify-center sm:justify-start gap-3">
+                <Unlock className="text-primary" size={24} />
                 Credenciais Disponíveis
               </h2>
               <button
                 onClick={() => setShowForm(!showForm)}
-                className="bg-white text-black hover:bg-neutral-200 px-6 py-2.5 rounded-2xl font-bold flex items-center gap-2 transition-all active:scale-95"
+                className="w-full sm:w-auto justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 sm:py-2.5 rounded-2xl font-bold flex items-center gap-2 transition-all active:scale-95"
               >
                 <Plus size={18} /> NOVO ITEM
               </button>
@@ -384,32 +400,32 @@ export default function Security() {
 
             {/* Add Form */}
             {showForm && (
-              <div className="bg-white/5 p-8 rounded-3xl border border-white/10 space-y-5">
+              <div className="bg-card p-8 rounded-3xl border border-border space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
                       Website
                     </label>
                     <input
                       value={site}
                       onChange={(e) => setSite(e.target.value)}
                       placeholder="Ex: Netflix"
-                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
+                      className="w-full bg-background border border-input rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
                       Login
                     </label>
                     <input
                       value={login}
                       onChange={(e) => setLogin(e.target.value)}
                       placeholder="E-mail ou User"
-                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
+                      className="w-full bg-background border border-input rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
                       Senha
                     </label>
                     <input
@@ -417,13 +433,13 @@ export default function Security() {
                       value={pass}
                       onChange={(e) => setPass(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
+                      className="w-full bg-background border border-input rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-foreground"
                     />
                   </div>
                 </div>
                 <button
                   onClick={saveNewEntry}
-                  className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold text-white shadow-xl shadow-blue-600/20 transition-all"
+                  className="w-full bg-primary hover:bg-primary/90 py-4 rounded-2xl font-bold text-primary-foreground shadow-xl transition-all"
                 >
                   CRIPTOGRAFAR E GUARDAR NO COFRE
                 </button>
@@ -433,39 +449,39 @@ export default function Security() {
             {/* List */}
             <div className="grid gap-4">
               {items.length === 0 ? (
-                <div className="text-center py-20 text-neutral-600 font-medium">
+                <div className="text-center py-20 text-muted-foreground font-medium">
                   Cofre vazio. Adicione a sua primeira senha.
                 </div>
               ) : (
                 items.map((item) => (
                   <div
                     key={item.id}
-                    className="group bg-white/5 hover:bg-white/[0.08] p-5 rounded-[2rem] border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:border-blue-500/30"
+                    className="group bg-card hover:bg-accent p-4 sm:p-5 rounded-[2rem] border border-border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:border-primary/50 text-card-foreground"
                   >
-                    <div className="flex items-center gap-5">
-                      <div className="bg-neutral-900 text-blue-500 p-4 rounded-2xl group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                    <div className="flex items-center gap-4 sm:gap-5 w-full md:w-auto overflow-hidden">
+                      <div className="bg-secondary text-primary p-3 sm:p-4 rounded-2xl group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 flex-shrink-0">
                         {getIcon(item.site)}
                       </div>
-                      <div>
-                        <div className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-0.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[10px] sm:text-xs font-black text-primary uppercase tracking-[0.2em] mb-0.5 truncate">
                           {item.site}
                         </div>
-                        <div className="text-lg font-bold text-white">
-                          {item.login}
+                        <div className="text-base sm:text-lg font-bold truncate break-all text-foreground">
+                          {item.login || item.email}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="bg-black/40 px-5 py-3 rounded-2xl border border-white/5 flex items-center gap-6 min-w-[200px] justify-between">
-                        <span className="font-mono text-sm tracking-wider">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
+                      <div className="bg-muted px-4 sm:px-5 py-3 rounded-2xl border border-border flex items-center justify-between sm:min-w-[200px] flex-1">
+                        <span className="font-mono text-sm tracking-wider truncate mr-2">
                           {revealedPasses[item.id]
                             ? revealedPasses[item.id]
                             : "••••••••••••"}
                         </span>
                         <button
                           onClick={() => decryptPass(item.id, item.password)}
-                          className="text-neutral-500 hover:text-white transition-colors p-1"
+                          className="text-muted-foreground hover:text-foreground transition-colors p-1 flex-shrink-0"
                         >
                           {revealedPasses[item.id] ? (
                             <EyeOff size={18} />
@@ -476,7 +492,7 @@ export default function Security() {
                       </div>
                       <button
                         onClick={() => deleteItem(item.id)}
-                        className="text-neutral-800 hover:text-red-500 transition-colors p-2"
+                        className="bg-destructive/10 sm:bg-transparent text-destructive sm:text-muted-foreground hover:text-destructive transition-colors p-3 sm:p-2 rounded-2xl sm:rounded-none flex justify-center items-center flex-shrink-0"
                       >
                         <Trash2 size={20} />
                       </button>
